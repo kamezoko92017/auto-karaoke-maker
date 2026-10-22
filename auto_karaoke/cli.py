@@ -9,11 +9,24 @@ import argparse
 from auto_karaoke.pipeline import AutoKaraokePipeline
 
 def main():
-    parser = argparse.ArgumentParser(description="Auto-Karaoke Maker CLI: Turn any song + lyrics into karaoke video")
+    parser = argparse.ArgumentParser(
+        description="Auto-Karaoke Maker CLI: Turn any song + lyrics into professional running-text karaoke video"
+    )
     parser.add_argument("audio", help="Input song audio (mp3, wav, flac)")
     parser.add_argument("-l", "--lyrics", required=True, help="Path to lyrics text file")
     parser.add_argument("-o", "--output-dir", default="output", help="Output directory (default: output)")
-    parser.add_argument("-b", "--background", help="Optional video/image background")
+    parser.add_argument("-b", "--background", help="Optional video/image background (mp4, jpg, png)")
+    parser.add_argument(
+        "--aligner",
+        choices=["auto", "mms", "whisper"],
+        default="auto",
+        help="Alignment engine: 'mms' (Best for Vietnamese), 'whisper' (Best for English/Chinese/Japanese), 'auto' (Default)"
+    )
+    parser.add_argument(
+        "--lang",
+        default="vi",
+        help="Song language code: 'vi' (Vietnamese), 'en' (English), 'zh' (Chinese), 'ja' (Japanese), 'ko' (Korean)"
+    )
     parser.add_argument("--cpu", action="store_true", help="Force CPU mode")
 
     args = parser.parse_args()
@@ -21,7 +34,11 @@ def main():
     with open(args.lyrics, "r", encoding="utf-8") as f:
         lyrics_text = f.read()
 
-    pipeline = AutoKaraokePipeline(use_gpu=not args.cpu)
+    pipeline = AutoKaraokePipeline(
+        engine=args.aligner,
+        language=args.lang,
+        use_gpu=not args.cpu
+    )
     pipeline.create_karaoke(
         song_audio_path=args.audio,
         lyrics_text=lyrics_text,

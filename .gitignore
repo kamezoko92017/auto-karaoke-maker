@@ -1,0 +1,12 @@
+__pycache__/
+*/__pycache__/
+*.pyc
+*.mp3
+*.wav
+*.m4a
+*.mp4
+output/
+stems/
+htdemucs/
+sample_karaoke.ass
+.venv/
